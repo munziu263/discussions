@@ -1,0 +1,5 @@
+{
+  "name": "discussions",
+  "description": "Decision record workflow: discussions, experiments, and typed cross-references. A lightweight alternative to GitHub Issues for private codebases.",
+  "version": "1.0.0"
+}

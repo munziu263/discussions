@@ -23,6 +23,8 @@ Before any action, read the per-project config from `.claude/decisions.local.md`
 - `experiments_dir` -- directory for experiment files (default: `experiments`)
 - `speakers.users` -- list of human participant names (default: `[user]`)
 - `speakers.ai` -- name for AI entries (default: `claude`)
+- `demos.tool` -- demo tool to use when creating experiments (default: `none`).
+  Set to `tinker` to create interactive demos with tinker-cli.
 
 If the file does not exist, use the defaults above.
 
@@ -204,6 +206,33 @@ The body contains:
 11. Add a final `### <speakers.ai> -- YYYY-MM-DD` entry to the discussion
     noting the experiment was created, with the experiment path.
 12. Report the experiment file path and number to the user.
+13. **Create an interactive demo** (if `demos.tool` is set to `tinker` in config).
+    If `demos.tool` is `none` or not set, skip this step entirely.
+    - Create directory `.tinker/NNN-<slug>/` matching the experiment number and slug.
+    - Create `.tinker/NNN-<slug>/demo.py` as a percent-format Python script
+      (`# %%` cell markers) with setup cells that import relevant modules and
+      demonstrate the experiment's work.
+    - Create `.tinker/NNN-<slug>/tinker.toml` with:
+      ```toml
+      [project]
+      name = "NNN-<slug>"
+
+      [command]
+      run = "python demo.py"
+
+      [repl]
+      command = ".venv/bin/ipython"
+      ```
+      The `[repl]` section **must** point at the project's local venv IPython,
+      not the default `uvx ipython`, because the isolated uvx environment cannot
+      import project dependencies.
+    - Reference the demo from the experiment's `## Approach` or `## Next` section:
+      `Interactive demo: .tinker/NNN-<slug>/`
+    - The demo should be runnable via:
+      ```bash
+      uvx --from tinker-cli tinker run .tinker/NNN-<slug>/
+      uvx --from tinker-cli tinker repl .tinker/NNN-<slug>/
+      ```
 
 ### /discussion list [all]
 
